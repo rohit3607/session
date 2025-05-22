@@ -22,13 +22,18 @@ def export_session_string():
     # Get phone number
     PHONE_NUMBER = get_input_or_env("PHONE_NUMBER", "Enter your phone number (with country code): ")
 
-    SESSION_STRING = os.path.join("/tmp", "my_session")  
+    # Use a safe writable directory
+    session_dir = os.path.join(os.path.expanduser("~"), "pyrogram_sessions")
+    os.makedirs(session_dir, exist_ok=True)
+    SESSION_STRING = os.path.join(session_dir, "my_session")
+
+    session_file = f"{SESSION_STRING}.session"
 
     try:
         app = Client(
             name=SESSION_STRING,
-            api_id=API_ID, 
-            api_hash=API_HASH, 
+            api_id=API_ID,
+            api_hash=API_HASH,
             phone_number=PHONE_NUMBER
         )
 
@@ -41,20 +46,16 @@ def export_session_string():
             # Send session string to "Saved Messages"
             app.send_message("me", f"Your generated session string:\n\n`{session_string}`")
             print("Session string has been sent to your 'Saved Messages'.")
-            
-            # Define the session file path
-            session_file = f"{SESSION_STRING}.session"
-            
-            # Check if the session file exists and delete it
-            if os.path.exists(session_file):
-                os.remove(session_file)
-                print(f"\nSession file '{session_file}' has been deleted.")
-            else:
-                print(f"\nSession file '{session_file}' not found.")
+
+        # Delete session file AFTER client context closes
+        if os.path.exists(session_file):
+            os.remove(session_file)
+            print(f"\nSession file '{session_file}' has been deleted.")
+        else:
+            print(f"\nSession file '{session_file}' not found.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 # Run the function
 if __name__ == "__main__":
