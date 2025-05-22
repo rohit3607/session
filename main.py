@@ -22,7 +22,7 @@ def export_session_string():
     # Get phone number
     PHONE_NUMBER = get_input_or_env("PHONE_NUMBER", "Enter your phone number (with country code): ")
 
-    SESSION_STRING = "my_session"
+    SESSION_STRING = os.path.join("/tmp", "my_session")  
 
     try:
         app = Client(
